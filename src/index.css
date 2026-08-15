@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Sora:wght@400;500;600;700&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-sans: 'Sora', ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink: #141816;
+  --color-ink-soft: #2c3430;
+  --color-paper: #f3f5f1;
+  --color-mist: #e4e9e2;
+  --color-leaf: #1f6b4a;
+  --color-leaf-bright: #2f9e6b;
+  --color-citrus: #e8ff47;
+  --color-smoke: #6b746e;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  html.scroll-locked {
+    overflow: hidden !important;
+    overscroll-behavior: none;
+  }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background:
+      radial-gradient(ellipse 80% 50% at 10% -10%, rgba(47, 158, 107, 0.14), transparent 55%),
+      radial-gradient(ellipse 60% 40% at 100% 0%, rgba(232, 255, 71, 0.18), transparent 50%),
+      linear-gradient(180deg, #f7f8f5 0%, var(--color-paper) 40%, #eef2ec 100%);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  #root {
+    width: 100%;
+    min-height: 100svh;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  button {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  ::selection {
+    background: var(--color-citrus);
+    color: var(--color-ink);
+  }
+}
