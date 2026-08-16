@@ -20,7 +20,7 @@ export default function CartButton({ onClick }) {
           <button
             type="button"
             onClick={onClick}
-            className="pointer-events-auto flex w-full items-center gap-3 rounded-[1.35rem] bg-ink p-2 pr-3 text-left shadow-[0_16px_44px_rgba(20,24,22,0.34)] ring-1 ring-white/10 transition active:scale-[0.98] sm:min-w-88 sm:rounded-full sm:p-1.5 sm:pr-2 sm:hover:bg-leaf"
+            className="pointer-events-auto flex w-full items-center gap-3 rounded-[1.35rem] bg-ink p-2 pr-3 text-left shadow-[0_16px_44px_rgba(26,17,19,0.34)] ring-1 ring-white/10 transition active:scale-[0.98] sm:min-w-88 sm:rounded-full sm:p-1.5 sm:pr-2 sm:hover:bg-leaf"
           >
             <span className="relative flex h-12 shrink-0 items-center pl-1 sm:h-11">
               {previews.length > 0 ? (

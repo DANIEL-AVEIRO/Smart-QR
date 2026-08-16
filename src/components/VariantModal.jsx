@@ -114,14 +114,28 @@ export default function VariantModal({ item, onClose }) {
               </div>
 
               <div className="flex-1 space-y-5 overflow-y-auto overscroll-contain px-4 py-4 [-ms-overflow-style:none] [scrollbar-width:none] sm:space-y-6 sm:px-5 sm:py-5 [&::-webkit-scrollbar]:hidden">
-                {item.variants.map((group) => (
+                {item.variants.map((group) => {
+                  const selectedCount =
+                    group.type === 'multi' ? (selections[group.id] ?? []).length : 0
+
+                  return (
                   <div key={group.id}>
-                    <div className="mb-2.5 flex items-baseline justify-between gap-2 sm:mb-3 sm:gap-3">
-                      <h3 className="text-xs font-semibold uppercase tracking-[0.14em] text-smoke sm:text-sm">
+                    <div className="mb-2.5 flex items-center justify-between gap-2 sm:mb-3">
+                      <h3 className="text-sm font-semibold text-ink sm:text-base">
                         {group.label}
                       </h3>
-                      <span className="shrink-0 text-[11px] text-smoke sm:text-xs">
-                        {group.type === 'multi' ? 'Choose any' : 'Choose one'}
+                      <span
+                        className={`inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-[11px] font-semibold sm:text-xs ${
+                          group.type === 'multi'
+                            ? 'bg-leaf/12 text-leaf ring-1 ring-leaf/20'
+                            : 'bg-ink text-citrus'
+                        }`}
+                      >
+                        {group.type === 'multi'
+                          ? selectedCount > 0
+                            ? `Choose any · ${selectedCount}`
+                            : 'Choose any'
+                          : 'Choose one'}
                       </span>
                     </div>
 
@@ -149,8 +163,12 @@ export default function VariantModal({ item, onClose }) {
                           >
                             <span className="flex min-w-0 items-center gap-2.5 sm:gap-3">
                               <span
-                                className={`grid size-5 shrink-0 place-items-center rounded-full ${
-                                  selected ? 'bg-citrus text-ink' : 'bg-mist text-transparent'
+                                className={`grid size-5 shrink-0 place-items-center ${
+                                  group.type === 'multi' ? 'rounded-[5px]' : 'rounded-full'
+                                } ${
+                                  selected
+                                    ? 'bg-citrus text-ink'
+                                    : 'bg-mist text-transparent ring-1 ring-black/10'
                                 }`}
                               >
                                 <Check className="size-3" strokeWidth={3} />
@@ -171,7 +189,8 @@ export default function VariantModal({ item, onClose }) {
                       })}
                     </div>
                   </div>
-                ))}
+                  )
+                })}
 
                 <label className="block">
                   <span className="text-xs font-semibold uppercase tracking-[0.14em] text-smoke">

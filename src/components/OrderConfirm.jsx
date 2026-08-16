@@ -141,7 +141,7 @@ export default function OrderConfirm({ open, onClose, onPlaced }) {
                     <button
                       type="button"
                       onClick={onClose}
-                      className="mt-6 rounded-full bg-ink px-6 py-3 text-sm font-semibold text-citrus"
+                      className="mt-6 rounded-full bg-ink px-6 py-3 text-sm font-semibold text-citrus transition hover:bg-leaf hover:text-white"
                     >
                       Back to menu
                     </button>

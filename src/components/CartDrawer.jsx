@@ -48,17 +48,19 @@ export default function CartDrawer({ open, onClose, onCheckout }) {
 
               <div className="flex shrink-0 items-center justify-between gap-3 px-4 pb-3 pt-2 sm:border-b sm:border-mist sm:px-5 sm:pb-4 sm:pt-4">
                 <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="grid size-9 place-items-center rounded-full bg-leaf/12 text-leaf">
+                  <div className="flex items-center gap-2.5">
+                    <span className="grid size-9 shrink-0 place-items-center rounded-full bg-leaf/12 text-leaf">
                       <ShoppingBag className="size-4" />
                     </span>
-                    <h2 id="cart-title" className="font-display text-xl font-bold text-ink sm:text-2xl">
-                      Your order
-                    </h2>
+                    <div>
+                      <h2 id="cart-title" className="font-display text-xl font-bold text-ink sm:text-2xl">
+                        Your order
+                      </h2>
+                      <p className="mt-0.5 text-xs text-smoke">
+                        {count} {count === 1 ? 'item' : 'items'}
+                      </p>
+                    </div>
                   </div>
-                  <p className="mt-1 pl-11 text-xs text-smoke">
-                    {count} {count === 1 ? 'item' : 'items'}
-                  </p>
                 </div>
                 <button
                   type="button"

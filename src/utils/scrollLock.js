@@ -12,12 +12,15 @@ export function lockScroll() {
   const { body, documentElement } = document
   savedScrollY = window.scrollY
   const scrollbarWidth = getScrollbarWidth()
+  const pad = scrollbarWidth > 0 ? `${scrollbarWidth}px` : ''
 
   documentElement.style.setProperty('--scrollbar-compensation', `${scrollbarWidth}px`)
   documentElement.classList.add('scroll-locked')
+  documentElement.style.overflow = 'hidden'
+  if (pad) documentElement.style.paddingRight = pad
 
   body.style.overflow = 'hidden'
-  body.style.paddingRight = scrollbarWidth > 0 ? `${scrollbarWidth}px` : ''
+  body.style.paddingRight = pad
 }
 
 export function unlockScroll() {
@@ -29,7 +32,10 @@ export function unlockScroll() {
   const { body, documentElement } = document
 
   documentElement.classList.remove('scroll-locked')
+  documentElement.style.overflow = ''
+  documentElement.style.paddingRight = ''
+  documentElement.style.removeProperty('--scrollbar-compensation')
+
   body.style.overflow = ''
   body.style.paddingRight = ''
-  documentElement.style.removeProperty('--scrollbar-compensation')
 }

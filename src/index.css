@@ -19,11 +19,27 @@
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar,
+  *::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
 
   html.scroll-locked {
     overflow: hidden !important;
     overscroll-behavior: none;
+    padding-right: var(--scrollbar-compensation, 0px);
   }
 
   body {
@@ -51,6 +67,14 @@
 
   button {
     -webkit-tap-highlight-color: transparent;
+  }
+
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid var(--color-leaf);
+    outline-offset: 2px;
   }
 
   ::selection {

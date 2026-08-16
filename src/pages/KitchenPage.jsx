@@ -18,9 +18,24 @@ import { playOrderNotify } from '../utils/notifySound'
 const STATUSES = ['new', 'preparing', 'ready']
 
 const STATUS_META = {
-  new: { label: 'New', next: 'preparing', nextLabel: 'Start' },
-  preparing: { label: 'Preparing', next: 'ready', nextLabel: 'Mark ready' },
-  ready: { label: 'Ready', next: 'served', nextLabel: 'Served' },
+  new: {
+    label: 'New',
+    next: 'preparing',
+    nextLabel: 'Start',
+    badge: 'bg-ink text-citrus',
+  },
+  preparing: {
+    label: 'Preparing',
+    next: 'ready',
+    nextLabel: 'Mark ready',
+    badge: 'bg-leaf/12 text-leaf',
+  },
+  ready: {
+    label: 'Ready',
+    next: 'served',
+    nextLabel: 'Served',
+    badge: 'bg-citrus text-ink',
+  },
 }
 
 function shortId(id) {
@@ -35,9 +50,11 @@ function timeLabel(iso) {
 export default function KitchenPage() {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState('')
   const [updatingId, setUpdatingId] = useState(null)
   const [invoiceOrder, setInvoiceOrder] = useState(null)
+  const [lastRefreshed, setLastRefreshed] = useState(null)
 
   const fetchOrders = useCallback(async () => {
     if (!isSupabaseConfigured || !supabase) {
@@ -57,9 +74,20 @@ export default function KitchenPage() {
     } else {
       setError('')
       setOrders(data ?? [])
+      setLastRefreshed(new Date())
     }
     setLoading(false)
   }, [])
+
+  const handleRefresh = async () => {
+    if (refreshing) return
+    setRefreshing(true)
+    const started = Date.now()
+    await fetchOrders()
+    const wait = 600 - (Date.now() - started)
+    if (wait > 0) await new Promise((resolve) => setTimeout(resolve, wait))
+    setRefreshing(false)
+  }
 
   useEffect(() => {
     fetchOrders()
@@ -159,34 +187,40 @@ export default function KitchenPage() {
       <header className="sticky top-0 z-20 border-b border-mist bg-paper/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-4 sm:px-6">
           <div className="flex items-center gap-3">
-            <span className="grid size-10 place-items-center rounded-full bg-ink text-citrus">
+            <span className="grid size-10 place-items-center rounded-full bg-ink text-citrus shadow-[0_8px_20px_rgba(26,17,19,0.18)]">
               <ChefHat className="size-5" />
             </span>
             <div>
               <h1 className="font-display text-xl font-bold text-ink sm:text-2xl">Kitchen</h1>
-              <p className="text-xs text-smoke sm:text-sm">Live orders · {'<Daniel./>'}</p>
+              <p className="text-xs text-smoke sm:text-sm">
+                {lastRefreshed
+                  ? `Updated ${timeLabel(lastRefreshed.toISOString())}`
+                  : `Live orders · <Daniel./>`}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={() => playOrderNotify()}
-              className="grid size-10 place-items-center rounded-full bg-white text-ink ring-1 ring-mist"
+              className="grid size-10 place-items-center rounded-full bg-white text-ink ring-1 ring-mist transition hover:bg-mist"
               title="Test sound"
             >
               <Volume2 className="size-4" />
             </button>
             <button
               type="button"
-              onClick={fetchOrders}
-              className="grid size-10 place-items-center rounded-full bg-white text-ink ring-1 ring-mist"
-              title="Refresh"
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="grid size-10 place-items-center rounded-full bg-ink text-citrus transition hover:bg-leaf hover:text-white disabled:opacity-70"
+              title="Refresh orders"
+              aria-label="Refresh orders"
             >
-              <RefreshCw className="size-4" />
+              <RefreshCw className={`size-4 ${refreshing ? 'animate-spin' : ''}`} />
             </button>
             <Link
               to="/"
-              className="hidden rounded-full bg-ink px-4 py-2 text-sm font-semibold text-citrus sm:inline-flex"
+              className="inline-flex rounded-full bg-ink px-3 py-2 text-xs font-semibold text-citrus transition hover:bg-leaf hover:text-white sm:px-4 sm:text-sm"
             >
               Menu
             </Link>
@@ -210,11 +244,13 @@ export default function KitchenPage() {
           <div className="grid gap-5 lg:grid-cols-3">
             {STATUSES.map((status) => (
               <section key={status} className="min-w-0">
-                <div className="mb-3 flex items-center justify-between">
+                <div className="mb-3 flex items-center justify-between gap-2">
                   <h2 className="font-display text-lg font-semibold text-ink">
                     {STATUS_META[status].label}
                   </h2>
-                  <span className="rounded-full bg-mist px-2.5 py-0.5 text-xs font-semibold text-ink-soft">
+                  <span
+                    className={`rounded-full px-2.5 py-0.5 text-xs font-semibold tabular-nums ${STATUS_META[status].badge}`}
+                  >
                     {grouped[status].length}
                   </span>
                 </div>
@@ -222,7 +258,7 @@ export default function KitchenPage() {
                 <div className="space-y-3">
                   <AnimatePresence mode="popLayout">
                     {grouped[status].length === 0 ? (
-                      <p className="rounded-2xl bg-white/60 px-4 py-8 text-center text-sm text-smoke ring-1 ring-mist">
+                      <p className="rounded-2xl bg-white/70 px-4 py-10 text-center text-sm text-smoke ring-1 ring-dashed ring-mist">
                         No orders
                       </p>
                     ) : (
@@ -233,7 +269,7 @@ export default function KitchenPage() {
                           initial={{ opacity: 0, y: 8 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0, scale: 0.98 }}
-                          className="rounded-2xl bg-white p-4 shadow-[0_8px_24px_rgba(20,24,22,0.05)] ring-1 ring-mist"
+                          className="rounded-2xl bg-white p-4 shadow-[0_8px_24px_rgba(26,17,19,0.05)] ring-1 ring-mist"
                         >
                           <div className="flex items-start justify-between gap-2">
                             <div>
@@ -254,7 +290,10 @@ export default function KitchenPage() {
                             {(order.order_items ?? []).map((item) => (
                               <li key={item.id} className="text-sm">
                                 <p className="font-semibold text-ink">
-                                  {item.quantity}× {item.name}
+                                  <span className="mr-1.5 inline-grid min-w-5 place-items-center rounded-full bg-mist px-1.5 py-0.5 text-[11px] font-bold tabular-nums text-ink-soft">
+                                    {item.quantity}
+                                  </span>
+                                  {item.name}
                                 </p>
                                 {Array.isArray(item.variants) && item.variants.length > 0 && (
                                   <p className="text-xs text-smoke">

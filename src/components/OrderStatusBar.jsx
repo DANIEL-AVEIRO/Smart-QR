@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { CheckCircle2, ChefHat, Clock3, CookingPot, X } from 'lucide-react'
+import { CheckCircle2, ChefHat, ChevronDown, Clock3, CookingPot, X } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { isSupabaseConfigured, supabase } from '../lib/supabase'
 import { useCart } from '../context/CartContext'
@@ -128,6 +128,9 @@ export default function OrderStatusBar({ orderId, onClear }) {
           <span className="shrink-0 text-[11px] font-medium text-smoke">
             #{order.id.slice(0, 8)}
           </span>
+          <ChevronDown
+            className={`size-4 shrink-0 text-smoke transition ${open ? 'rotate-180' : ''}`}
+          />
         </button>
 
         <AnimatePresence>
