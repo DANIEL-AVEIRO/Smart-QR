@@ -1,40 +1,47 @@
-# &lt;Daniel./&gt;
+# Smart QR
 
-Table-side digital food menu and live kitchen board. Guests scan a QR code, browse dishes, customize variants, and send the order to the kitchen. Staff watch a real-time kanban, advance each ticket, then print a voucher.
+Table-side digital menu and live kitchen board for **&lt;Daniel./&gt;**.
 
-Prices are shown in **MMK**. Orders persist in **Supabase**; the kitchen board updates over **Realtime**.
+Guests scan a QR code, browse dishes, customize variants, and send the order to the kitchen. Staff watch a real-time kanban, advance each ticket, then print a voucher.
+
+Prices are **MMK**. Orders persist in **Supabase**; the kitchen board updates over **Realtime**.
+
+| Surface | URL | Who |
+| --- | --- | --- |
+| Menu | `/` | Guests |
+| Kitchen | `/kitchen` | Staff |
 
 ## Features
 
-**Guest menu (`/`)**
+**Guest menu**
 
 - 100 dishes across 10 categories (burgers, pizza, pasta, salads, seafood, grilled, sushi, desserts, drinks, breakfast)
-- Category filter chips and photo cards
+- Sticky category chips and photo cards
 - Per-category variants (single-select and multi-select) with price deltas
-- Cart with quantity controls, line totals, and a mobile docked **View cart** bar
+- Cart with quantity controls, line totals, and a docked **View cart** bar
 - Checkout with table number (default `T1`)
 - Optional notes per dish and per order
-- Live order status on the menu after checkout (Received → Preparing → Ready → Served)
+- Live status after checkout: Received → Preparing → Ready → Served (kept in `localStorage` so a refresh does not lose the ticket)
 
-**Kitchen (`/kitchen`)**
+**Kitchen**
 
 - Live columns: **New → Preparing → Ready** (served tickets leave the board)
-- Sound alert when a new order arrives
-- Guest notes shown on tickets and invoices
-- Invoice voucher with print layout
-- Manual refresh if needed
+- Sound alert on new orders, plus a test-sound control
+- Guest notes on tickets and invoices
+- Refresh with a spinning control and last-updated time
+- Invoice voucher with print layout (opens when a ticket is marked Served)
 
 ## Tech stack
 
-| Layer          | Choice                             |
-| -------------- | ---------------------------------- |
-| UI             | React 19, Vite 8, Tailwind CSS 4   |
-| Motion / icons | Framer Motion, Lucide              |
-| Routing        | React Router 7                     |
-| Backend        | Supabase (Postgres, RLS, Realtime) |
-| Deploy         | Vercel (`vercel.json` SPA rewrite) |
+| Layer | Choice |
+| --- | --- |
+| UI | React 19, Vite 8, Tailwind CSS 4 |
+| Motion / icons | Framer Motion, Lucide |
+| Routing | React Router 7 |
+| Backend | Supabase (Postgres, RLS, Realtime) |
+| Deploy | Vercel (`vercel.json` SPA rewrite) |
 
-Fonts: **Fraunces** (display) and **Sora** (UI). Brand colors live in `src/index.css` (`ink`, `citrus` blush, `leaf` crimson, `paper`).
+Fonts: **Fraunces** (display) and **Sora** (UI). Brand tokens live in [`src/index.css`](src/index.css) (`ink`, `citrus`, `leaf`, `paper`).
 
 ## Quick start
 
@@ -59,15 +66,13 @@ npm run dev
 - Menu: [http://localhost:5173/](http://localhost:5173/)
 - Kitchen: [http://localhost:5173/kitchen](http://localhost:5173/kitchen)
 
-Other scripts:
-
-| Command           | What it does                       |
-| ----------------- | ---------------------------------- |
-| `npm run build`   | Production build to `dist/`        |
+| Command | What it does |
+| --- | --- |
+| `npm run build` | Production build to `dist/` |
 | `npm run preview` | Serve the production build locally |
-| `npm run lint`    | Oxlint                             |
+| `npm run lint` | Oxlint |
 
-Without Supabase keys the menu still works; placing an order and the kitchen board will show a configuration error.
+Without Supabase keys the menu still browses. Placing an order and opening the kitchen board will show a configuration error.
 
 ## Supabase setup
 
@@ -81,30 +86,30 @@ Without Supabase keys the menu still works; placing an order and the kitchen boa
 
 **`orders`**
 
-| Column       | Type          | Notes                                       |
-| ------------ | ------------- | ------------------------------------------- |
-| `id`         | `uuid`        | Primary key                                 |
-| `table_no`   | `text`        | Guest table, default `T1`                   |
-| `status`     | `text`        | `new` \| `preparing` \| `ready` \| `served` |
-| `total_mmk`  | `integer`     | Cart total                                  |
-| `notes`      | `text`        | Order-level kitchen note                    |
-| `created_at` | `timestamptz` |                                             |
+| Column | Type | Notes |
+| --- | --- | --- |
+| `id` | `uuid` | Primary key |
+| `table_no` | `text` | Guest table, default `T1` |
+| `status` | `text` | `new` \| `preparing` \| `ready` \| `served` |
+| `total_mmk` | `integer` | Cart total |
+| `notes` | `text` | Order-level kitchen note |
+| `created_at` | `timestamptz` | |
 
 **`order_items`**
 
-| Column       | Type          | Notes                                                 |
-| ------------ | ------------- | ----------------------------------------------------- |
-| `id`         | `uuid`        | Primary key                                           |
-| `order_id`   | `uuid`        | FK → `orders`, cascade delete                         |
-| `name`       | `text`        | Dish name                                             |
-| `quantity`   | `integer`     |                                                       |
-| `unit_price` | `integer`     | MMK                                                   |
-| `variants`   | `jsonb`       | Labels, e.g. `[{ "group": "Size", "name": "Large" }]` |
-| `line_total` | `integer`     | MMK                                                   |
-| `notes`      | `text`        | Per-item kitchen note                                 |
-| `created_at` | `timestamptz` |                                                       |
+| Column | Type | Notes |
+| --- | --- | --- |
+| `id` | `uuid` | Primary key |
+| `order_id` | `uuid` | FK → `orders`, cascade delete |
+| `name` | `text` | Dish name |
+| `quantity` | `integer` | |
+| `unit_price` | `integer` | MMK |
+| `variants` | `jsonb` | Labels, e.g. `[{ "group": "Size", "name": "Large" }]` |
+| `line_total` | `integer` | MMK |
+| `notes` | `text` | Per-item kitchen note |
+| `created_at` | `timestamptz` | |
 
-### Security note
+### Security
 
 The schema grants **open anon policies** so the demo can insert and update without login. Tighten RLS (and drop broad `GRANT`s) before a real restaurant deploy — otherwise anyone with the anon key can read and change orders.
 
@@ -114,7 +119,7 @@ The schema grants **open anon policies** so the demo can insert and update witho
 Browse menu → pick variants → add to cart → checkout (table no)
         → INSERT orders (status: new) + order_items
         → Kitchen Realtime INSERT → chime
-        → Start → Mark ready → Served (ticket leaves the board)
+        → Start → Mark ready → Served (ticket leaves the board; invoice opens)
         → Guest menu shows live status until Served
 ```
 
