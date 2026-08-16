@@ -113,7 +113,7 @@ export default function VariantModal({ item, onClose }) {
                 </button>
               </div>
 
-              <div className="flex-1 space-y-5 overflow-y-auto overscroll-contain px-4 py-4 [-ms-overflow-style:none] [scrollbar-width:none] sm:space-y-6 sm:px-5 sm:py-5 [&::-webkit-scrollbar]:hidden">
+              <div className="flex-1 space-y-5 overflow-y-auto overscroll-contain px-4 py-4 scrollbar-none sm:space-y-6 sm:px-5 sm:py-5">
                 {item.variants.map((group) => {
                   const selectedCount =
                     group.type === 'multi' ? (selections[group.id] ?? []).length : 0

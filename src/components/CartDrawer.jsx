@@ -72,7 +72,7 @@ export default function CartDrawer({ open, onClose, onCheckout }) {
                 </button>
               </div>
 
-              <div className="flex-1 space-y-2.5 overflow-y-auto overscroll-contain px-3 py-1 [-ms-overflow-style:none] [scrollbar-width:none] sm:space-y-3 sm:px-5 sm:py-4 [&::-webkit-scrollbar]:hidden">
+              <div className="flex-1 space-y-2.5 overflow-y-auto overscroll-contain px-3 py-1 scrollbar-none sm:space-y-3 sm:px-5 sm:py-4">
                 {items.length === 0 ? (
                   <div className="flex flex-col items-center py-12 text-center">
                     <span className="grid size-14 place-items-center rounded-full bg-mist text-smoke">
@@ -91,7 +91,7 @@ export default function CartDrawer({ open, onClose, onCheckout }) {
                         <img
                           src={item.image}
                           alt={item.name}
-                          className="size-[4.5rem] rounded-xl object-cover sm:size-20"
+                          className="size-18 rounded-xl object-cover sm:size-20"
                         />
                         <button
                           type="button"

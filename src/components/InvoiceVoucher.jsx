@@ -262,7 +262,7 @@ export default function InvoiceVoucher({ order, open, onClose }) {
     <AnimatePresence>
       {open && order && (
         <motion.div
-          className="fixed inset-0 z-[70]"
+          className="fixed inset-0 z-70"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -300,7 +300,7 @@ export default function InvoiceVoucher({ order, open, onClose }) {
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-5 [-ms-overflow-style:none] [scrollbar-width:none] sm:px-6 [&::-webkit-scrollbar]:hidden">
+              <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-5 scrollbar-none sm:px-6">
                 <header className="border-b border-dashed border-smoke/40 pb-4 text-center">
                   <p className="font-display text-2xl font-bold tracking-tight text-ink">{'<Daniel./>'}</p>
                   <p className="mt-1 text-xs uppercase tracking-[0.18em] text-smoke">Invoice voucher</p>

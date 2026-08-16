@@ -17,10 +17,8 @@
 
 @layer base {
   html {
-    scroll-behavior: smooth;
+    @apply scroll-smooth scrollbar-none;
     -webkit-text-size-adjust: 100%;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
   }
 
   html::-webkit-scrollbar,
@@ -32,37 +30,28 @@
   }
 
   * {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    @apply scrollbar-none;
   }
 
   html.scroll-locked {
-    overflow: hidden !important;
-    overscroll-behavior: none;
+    @apply overflow-hidden! overscroll-none;
     padding-right: var(--scrollbar-compensation, 0px);
   }
 
   body {
-    margin: 0;
-    min-width: 320px;
-    font-family: var(--font-sans);
-    color: var(--color-ink);
+    @apply m-0 min-w-80 font-sans text-ink antialiased;
     background:
       radial-gradient(ellipse 80% 50% at 10% -10%, rgba(180, 35, 44, 0.12), transparent 55%),
       radial-gradient(ellipse 60% 40% at 100% 0%, rgba(255, 213, 200, 0.38), transparent 50%),
       linear-gradient(180deg, #fbf6f3 0%, var(--color-paper) 40%, #f3ebe6 100%);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
   }
 
   #root {
-    width: 100%;
-    min-height: 100svh;
+    @apply min-h-svh w-full;
   }
 
   img {
-    max-width: 100%;
-    height: auto;
+    @apply h-auto max-w-full;
   }
 
   button {
@@ -73,12 +62,10 @@
   a:focus-visible,
   input:focus-visible,
   textarea:focus-visible {
-    outline: 2px solid var(--color-leaf);
-    outline-offset: 2px;
+    @apply outline-2 outline-offset-2 outline-leaf;
   }
 
   ::selection {
-    background: var(--color-citrus);
-    color: var(--color-ink);
+    @apply bg-citrus text-ink;
   }
 }

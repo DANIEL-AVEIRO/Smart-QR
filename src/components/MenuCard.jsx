@@ -8,14 +8,14 @@ export default function MenuCard({ item, onSelect }) {
       onClick={() => onSelect(item)}
       className="group flex h-full flex-col overflow-hidden rounded-xl bg-white text-left shadow-[0_8px_24px_rgba(26,17,19,0.05)] ring-1 ring-mist/80 transition active:scale-[0.98] sm:rounded-2xl sm:shadow-[0_10px_30px_rgba(26,17,19,0.06)] sm:hover:-translate-y-1 sm:hover:shadow-[0_18px_40px_rgba(26,17,19,0.1)] sm:active:scale-100"
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-mist">
+      <div className="relative aspect-4/3 overflow-hidden bg-mist">
         <img
           src={item.image}
           alt={item.name}
           loading="lazy"
           className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
         />
-        <span className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-ink/45 to-transparent" />
+        <span className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-ink/45 to-transparent" />
         <span className="absolute bottom-2 left-2 max-w-[calc(100%-1rem)] truncate rounded-full bg-ink/90 px-2.5 py-1 text-[10px] font-semibold text-citrus backdrop-blur-sm sm:bottom-3 sm:left-3 sm:text-xs">
           {formatPrice(item.price)}
         </span>

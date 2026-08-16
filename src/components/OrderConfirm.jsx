@@ -87,7 +87,7 @@ export default function OrderConfirm({ open, onClose, onPlaced }) {
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-[60]"
+          className="fixed inset-0 z-60"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -125,7 +125,7 @@ export default function OrderConfirm({ open, onClose, onPlaced }) {
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 [-ms-overflow-style:none] [scrollbar-width:none] sm:px-5 [&::-webkit-scrollbar]:hidden">
+              <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-4 scrollbar-none sm:px-5">
                 {successId ? (
                   <div className="flex flex-col items-center py-8 text-center">
                     <span className="grid size-14 place-items-center rounded-full bg-leaf/15 text-leaf">
