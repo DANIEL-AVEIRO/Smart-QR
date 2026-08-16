@@ -5,14 +5,14 @@
   --font-display: 'Fraunces', Georgia, serif;
   --font-sans: 'Sora', ui-sans-serif, system-ui, sans-serif;
 
-  --color-ink: #141816;
-  --color-ink-soft: #2c3430;
-  --color-paper: #f3f5f1;
-  --color-mist: #e4e9e2;
-  --color-leaf: #1f6b4a;
-  --color-leaf-bright: #2f9e6b;
-  --color-citrus: #e8ff47;
-  --color-smoke: #6b746e;
+  --color-ink: #1a1113;
+  --color-ink-soft: #3d2a2e;
+  --color-paper: #f7f1ed;
+  --color-mist: #ede4df;
+  --color-leaf: #b4232c;
+  --color-leaf-bright: #d4454c;
+  --color-citrus: #ffd5c8;
+  --color-smoke: #7a6c68;
 }
 
 @layer base {
@@ -32,9 +32,9 @@
     font-family: var(--font-sans);
     color: var(--color-ink);
     background:
-      radial-gradient(ellipse 80% 50% at 10% -10%, rgba(47, 158, 107, 0.14), transparent 55%),
-      radial-gradient(ellipse 60% 40% at 100% 0%, rgba(232, 255, 71, 0.18), transparent 50%),
-      linear-gradient(180deg, #f7f8f5 0%, var(--color-paper) 40%, #eef2ec 100%);
+      radial-gradient(ellipse 80% 50% at 10% -10%, rgba(180, 35, 44, 0.12), transparent 55%),
+      radial-gradient(ellipse 60% 40% at 100% 0%, rgba(255, 213, 200, 0.38), transparent 50%),
+      linear-gradient(180deg, #fbf6f3 0%, var(--color-paper) 40%, #f3ebe6 100%);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }

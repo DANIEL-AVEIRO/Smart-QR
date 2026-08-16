@@ -16,11 +16,13 @@ export default function VariantModal({ item, onClose }) {
     getDefaultSelections(item?.variants ?? []),
   )
   const [quantity, setQuantity] = useState(1)
+  const [notes, setNotes] = useState('')
 
   useEffect(() => {
     if (!item) return
     setSelections(getDefaultSelections(item.variants))
     setQuantity(1)
+    setNotes('')
   }, [item])
 
   useEffect(() => {
@@ -170,6 +172,19 @@ export default function VariantModal({ item, onClose }) {
                     </div>
                   </div>
                 ))}
+
+                <label className="block">
+                  <span className="text-xs font-semibold uppercase tracking-[0.14em] text-smoke">
+                    Note
+                  </span>
+                  <textarea
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value.slice(0, 120))}
+                    rows={2}
+                    placeholder="No onion, less spicy…"
+                    className="mt-2 w-full resize-none rounded-2xl border-0 bg-white px-3 py-2.5 text-sm text-ink ring-1 ring-mist outline-none placeholder:text-smoke/70 focus:ring-2 focus:ring-leaf"
+                  />
+                </label>
               </div>
 
               <div className="shrink-0 border-t border-mist px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-5 sm:py-4">
@@ -205,6 +220,7 @@ export default function VariantModal({ item, onClose }) {
                         quantity,
                         variantLabels: getSelectedVariantLabels(item.variants, selections),
                         lineTotal: total,
+                        notes,
                       })
                       onClose()
                     }}

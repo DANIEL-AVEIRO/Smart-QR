@@ -6,9 +6,10 @@ import { useCart } from '../context/CartContext'
 import { isSupabaseConfigured, supabase } from '../lib/supabase'
 import { lockScroll, unlockScroll } from '../utils/scrollLock'
 
-export default function OrderConfirm({ open, onClose }) {
+export default function OrderConfirm({ open, onClose, onPlaced }) {
   const { items, total, clear } = useCart()
   const [tableNo, setTableNo] = useState('T1')
+  const [notes, setNotes] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [successId, setSuccessId] = useState(null)
@@ -19,6 +20,7 @@ export default function OrderConfirm({ open, onClose }) {
     setError('')
     setSuccessId(null)
     setSubmitting(false)
+    setNotes('')
     return () => unlockScroll()
   }, [open])
 
@@ -46,6 +48,7 @@ export default function OrderConfirm({ open, onClose }) {
         table_no: trimmedTable,
         status: 'new',
         total_mmk: total,
+        notes: notes.trim(),
       })
       .select('id')
       .single()
@@ -63,6 +66,7 @@ export default function OrderConfirm({ open, onClose }) {
       unit_price: item.unitPrice,
       variants: item.variantLabels ?? [],
       line_total: item.lineTotal,
+      notes: item.notes ?? '',
     }))
 
     const { error: itemsError } = await supabase.from('order_items').insert(rows)
@@ -76,6 +80,7 @@ export default function OrderConfirm({ open, onClose }) {
     clear()
     setSuccessId(order.id)
     setSubmitting(false)
+    onPlaced?.(order.id)
   }
 
   return (
@@ -128,6 +133,9 @@ export default function OrderConfirm({ open, onClose }) {
                     </span>
                     <p className="mt-4 font-display text-xl font-semibold text-ink">Sent to kitchen</p>
                     <p className="mt-2 text-sm text-smoke">
+                      Track it on the menu — kitchen will update as they cook.
+                    </p>
+                    <p className="mt-2 text-sm text-smoke">
                       Order ID: <span className="font-mono text-ink">{successId.slice(0, 8)}</span>
                     </p>
                     <button
@@ -166,6 +174,9 @@ export default function OrderConfirm({ open, onClose }) {
                                 {item.variantLabels.map((v) => v.name).join(' · ')}
                               </p>
                             )}
+                            {item.notes ? (
+                              <p className="mt-1 text-xs italic text-leaf">{item.notes}</p>
+                            ) : null}
                           </div>
                           <span className="shrink-0 text-sm font-semibold">
                             {formatPrice(item.lineTotal)}
@@ -173,6 +184,17 @@ export default function OrderConfirm({ open, onClose }) {
                         </li>
                       ))}
                     </ul>
+
+                    <label className="mt-5 block text-sm font-semibold text-ink">
+                      Note for kitchen
+                      <textarea
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value.slice(0, 180))}
+                        rows={2}
+                        placeholder="Allergy, extra napkins, wait 10 minutes…"
+                        className="mt-2 w-full resize-none rounded-2xl border-0 bg-white px-4 py-3 text-sm font-normal text-ink ring-1 ring-mist outline-none placeholder:text-smoke/70 focus:ring-2 focus:ring-leaf"
+                      />
+                    </label>
 
                     {error && (
                       <p className="mt-4 rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700 ring-1 ring-red-100">

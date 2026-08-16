@@ -1,16 +1,177 @@
-# React + Vite
+# &lt;Daniel./&gt;
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Table-side digital food menu and live kitchen board. Guests scan a QR code, browse dishes, customize variants, and send the order to the kitchen. Staff watch a real-time kanban, advance each ticket, then print a voucher.
 
-Currently, two official plugins are available:
+Prices are shown in **MMK**. Orders persist in **Supabase**; the kitchen board updates over **Realtime**.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+**Guest menu (`/`)**
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- 100 dishes across 10 categories (burgers, pizza, pasta, salads, seafood, grilled, sushi, desserts, drinks, breakfast)
+- Category filter chips and photo cards
+- Per-category variants (single-select and multi-select) with price deltas
+- Cart with quantity controls, line totals, and a mobile docked **View cart** bar
+- Checkout with table number (default `T1`)
+- Optional notes per dish and per order
+- Live order status on the menu after checkout (Received → Preparing → Ready → Served)
 
-## Expanding the Oxlint configuration
+**Kitchen (`/kitchen`)**
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+- Live columns: **New → Preparing → Ready** (served tickets leave the board)
+- Sound alert when a new order arrives
+- Guest notes shown on tickets and invoices
+- Invoice voucher with print layout
+- Manual refresh if needed
+
+## Tech stack
+
+| Layer          | Choice                             |
+| -------------- | ---------------------------------- |
+| UI             | React 19, Vite 8, Tailwind CSS 4   |
+| Motion / icons | Framer Motion, Lucide              |
+| Routing        | React Router 7                     |
+| Backend        | Supabase (Postgres, RLS, Realtime) |
+| Deploy         | Vercel (`vercel.json` SPA rewrite) |
+
+Fonts: **Fraunces** (display) and **Sora** (UI). Brand colors live in `src/index.css` (`ink`, `citrus` blush, `leaf` crimson, `paper`).
+
+## Quick start
+
+Requires **Node.js 20+**.
+
+```bash
+npm install
+cp .env.example .env.local
+```
+
+Fill in `.env.local`:
+
+```env
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+```
+
+```bash
+npm run dev
+```
+
+- Menu: [http://localhost:5173/](http://localhost:5173/)
+- Kitchen: [http://localhost:5173/kitchen](http://localhost:5173/kitchen)
+
+Other scripts:
+
+| Command           | What it does                       |
+| ----------------- | ---------------------------------- |
+| `npm run build`   | Production build to `dist/`        |
+| `npm run preview` | Serve the production build locally |
+| `npm run lint`    | Oxlint                             |
+
+Without Supabase keys the menu still works; placing an order and the kitchen board will show a configuration error.
+
+## Supabase setup
+
+1. Create a project at [supabase.com](https://supabase.com).
+2. Open **SQL Editor** and run [`supabase/schema.sql`](supabase/schema.sql).
+3. Enable Realtime for `orders`: **Database → Publications → `supabase_realtime`** (the SQL file also tries to add the table).
+4. Copy **Project URL** and **anon public** key into `.env.local`.
+5. Restart the Vite dev server after changing env files.
+
+### Tables
+
+**`orders`**
+
+| Column       | Type          | Notes                                       |
+| ------------ | ------------- | ------------------------------------------- |
+| `id`         | `uuid`        | Primary key                                 |
+| `table_no`   | `text`        | Guest table, default `T1`                   |
+| `status`     | `text`        | `new` \| `preparing` \| `ready` \| `served` |
+| `total_mmk`  | `integer`     | Cart total                                  |
+| `notes`      | `text`        | Order-level kitchen note                    |
+| `created_at` | `timestamptz` |                                             |
+
+**`order_items`**
+
+| Column       | Type          | Notes                                                 |
+| ------------ | ------------- | ----------------------------------------------------- |
+| `id`         | `uuid`        | Primary key                                           |
+| `order_id`   | `uuid`        | FK → `orders`, cascade delete                         |
+| `name`       | `text`        | Dish name                                             |
+| `quantity`   | `integer`     |                                                       |
+| `unit_price` | `integer`     | MMK                                                   |
+| `variants`   | `jsonb`       | Labels, e.g. `[{ "group": "Size", "name": "Large" }]` |
+| `line_total` | `integer`     | MMK                                                   |
+| `notes`      | `text`        | Per-item kitchen note                                 |
+| `created_at` | `timestamptz` |                                                       |
+
+### Security note
+
+The schema grants **open anon policies** so the demo can insert and update without login. Tighten RLS (and drop broad `GRANT`s) before a real restaurant deploy — otherwise anyone with the anon key can read and change orders.
+
+## How an order moves
+
+```
+Browse menu → pick variants → add to cart → checkout (table no)
+        → INSERT orders (status: new) + order_items
+        → Kitchen Realtime INSERT → chime
+        → Start → Mark ready → Served (ticket leaves the board)
+        → Guest menu shows live status until Served
+```
+
+The kitchen subscribes to `INSERT` and `UPDATE` on `public.orders`. After an insert it briefly retries fetching `order_items`, because line items are written right after the parent row.
+
+## Project structure
+
+```
+src/
+  App.jsx                 Routes: / and /kitchen
+  main.jsx
+  index.css               Tailwind theme + brand tokens
+  context/CartContext.jsx Session cart
+  data/menu.js            Categories, dishes, variants, MMK helpers
+  lib/supabase.js         Client (null if env missing)
+  pages/
+    MenuPage.jsx
+    KitchenPage.jsx
+  components/
+    Logo.jsx
+    MenuSection.jsx / MenuCard.jsx
+    VariantModal.jsx
+    CartButton.jsx / CartDrawer.jsx
+    OrderConfirm.jsx
+    OrderStatusBar.jsx
+    InvoiceVoucher.jsx
+  utils/
+    scrollLock.js
+    activeOrder.js
+    notifySound.js        /sounds/order-chime.mp3, else Web Audio beep
+public/
+  favicon.svg             Brand mark (ink + citrus QR)
+  menu/<category>/01.jpg  Dish photos
+  sounds/order-chime.mp3
+supabase/schema.sql
+```
+
+## Menu data
+
+Dishes and variants are defined in [`src/data/menu.js`](src/data/menu.js). Source prices are small numbers; they are stored and displayed as MMK with `amount * 1000`.
+
+Photos follow:
+
+```
+public/menu/<categoryId>/01.jpg … 10.jpg
+```
+
+To add a dish: append it to `itemsByCategory`, drop a matching image in `public/menu/…`, and (if needed) extend `variantsByCategory`.
+
+## Deployment (Vercel)
+
+1. Push the repo and import it in Vercel.
+2. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in the project environment.
+3. Deploy. `vercel.json` rewrites all paths to `index.html` so `/kitchen` works on refresh.
+
+For table tents, print QR codes that point at the production origin (`https://your-domain/`). Staff keep `/kitchen` open on a tablet or display.
+
+## License
+
+Private project. Not licensed for reuse unless you add a license file.

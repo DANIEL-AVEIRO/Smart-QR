@@ -14,7 +14,7 @@ export default function Logo() {
           <QrCode className="size-6 sm:size-7 md:size-8" strokeWidth={2.25} />
         </span>
         <span className="font-display text-xl font-bold tracking-tight text-ink sm:text-2xl md:text-3xl">
-          Smart QR
+          {'<Daniel./>'}
         </span>
       </div>
     </motion.div>

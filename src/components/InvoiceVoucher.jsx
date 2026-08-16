@@ -43,6 +43,7 @@ function buildPrintHtml(order, issuedAt) {
           <td>
             <strong>${escapeHtml(item.name)}</strong>
             ${variants ? `<div class="muted">${escapeHtml(variants)}</div>` : ''}
+            ${item.notes ? `<div class="muted">Note: ${escapeHtml(item.notes)}</div>` : ''}
             <div class="muted">@ ${escapeHtml(formatPrice(item.unit_price))}</div>
           </td>
           <td class="center">${escapeHtml(item.quantity)}</td>
@@ -65,18 +66,18 @@ function buildPrintHtml(order, issuedAt) {
       margin: 0;
       padding: 16px;
       font-family: Georgia, 'Times New Roman', serif;
-      color: #141816;
+      color: #1a1113;
       background: #fff;
     }
     .sheet { max-width: 420px; margin: 0 auto; }
-    .brand { text-align: center; border-bottom: 1px dashed #6b746e; padding-bottom: 12px; }
+    .brand { text-align: center; border-bottom: 1px dashed #7a6c68; padding-bottom: 12px; }
     .brand h1 { margin: 0; font-size: 28px; }
     .brand .eyebrow {
       margin: 6px 0 0;
       font-size: 11px;
       letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: #6b746e;
+      color: #7a6c68;
       font-family: system-ui, sans-serif;
     }
     .brand .id {
@@ -93,7 +94,7 @@ function buildPrintHtml(order, issuedAt) {
       font-family: system-ui, sans-serif;
       font-size: 13px;
     }
-    .meta .label { color: #6b746e; font-size: 11px; }
+    .meta .label { color: #7a6c68; font-size: 11px; }
     .meta .value { font-weight: 600; margin-top: 2px; }
     .meta .right { text-align: right; }
     table {
@@ -108,26 +109,26 @@ function buildPrintHtml(order, issuedAt) {
       font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.04em;
-      color: #6b746e;
-      border-top: 1px solid #e4e9e2;
-      border-bottom: 1px solid #e4e9e2;
+      color: #7a6c68;
+      border-top: 1px solid #ede4df;
+      border-bottom: 1px solid #ede4df;
       padding: 8px 4px;
     }
     th.center, td.center { text-align: center; }
     th.right, td.right { text-align: right; }
     td {
       padding: 10px 4px;
-      border-bottom: 1px solid #e4e9e2;
+      border-bottom: 1px solid #ede4df;
       vertical-align: top;
     }
-    .muted { color: #6b746e; font-size: 11px; margin-top: 2px; }
+    .muted { color: #7a6c68; font-size: 11px; margin-top: 2px; }
     .total {
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
       margin-top: 14px;
       padding-top: 12px;
-      border-top: 2px solid #141816;
+      border-top: 2px solid #1a1113;
       font-family: system-ui, sans-serif;
     }
     .total .label {
@@ -135,7 +136,7 @@ function buildPrintHtml(order, issuedAt) {
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: #6b746e;
+      color: #7a6c68;
     }
     .total .amount {
       font-family: Georgia, serif;
@@ -146,7 +147,7 @@ function buildPrintHtml(order, issuedAt) {
       margin-top: 28px;
       text-align: center;
       font-size: 12px;
-      color: #6b746e;
+      color: #7a6c68;
       font-family: system-ui, sans-serif;
     }
     @page { margin: 12mm; }
@@ -155,7 +156,7 @@ function buildPrintHtml(order, issuedAt) {
 <body>
   <div class="sheet">
     <div class="brand">
-      <h1>Smart QR</h1>
+      <h1>&lt;Daniel./&gt;</h1>
       <p class="eyebrow">Invoice voucher</p>
       <p class="id">#${escapeHtml(shortId(order.id))}</p>
     </div>
@@ -191,6 +192,7 @@ function buildPrintHtml(order, issuedAt) {
       <span class="label">Total</span>
       <span class="amount">${escapeHtml(formatPrice(order.total_mmk))}</span>
     </div>
+    ${order.notes ? `<p class="thanks" style="text-align:left;color:#1a1113">Note: ${escapeHtml(order.notes)}</p>` : ''}
     <p class="thanks">Thank you · Please keep this voucher</p>
   </div>
 </body>
@@ -300,7 +302,7 @@ export default function InvoiceVoucher({ order, open, onClose }) {
 
               <div className="flex-1 overflow-y-auto overscroll-contain px-5 py-5 [-ms-overflow-style:none] [scrollbar-width:none] sm:px-6 [&::-webkit-scrollbar]:hidden">
                 <header className="border-b border-dashed border-smoke/40 pb-4 text-center">
-                  <p className="font-display text-2xl font-bold tracking-tight text-ink">Smart QR</p>
+                  <p className="font-display text-2xl font-bold tracking-tight text-ink">{'<Daniel./>'}</p>
                   <p className="mt-1 text-xs uppercase tracking-[0.18em] text-smoke">Invoice voucher</p>
                   <p className="mt-3 font-mono text-sm font-semibold text-ink">
                     #{shortId(order.id)}
@@ -346,6 +348,9 @@ export default function InvoiceVoucher({ order, open, onClose }) {
                               {item.variants.map((v) => v.name || v).join(' · ')}
                             </p>
                           )}
+                          {item.notes ? (
+                            <p className="mt-0.5 text-xs italic text-leaf">{item.notes}</p>
+                          ) : null}
                           <p className="mt-0.5 text-xs text-smoke">
                             @ {formatPrice(item.unit_price)}
                           </p>
@@ -369,6 +374,12 @@ export default function InvoiceVoucher({ order, open, onClose }) {
                     {formatPrice(order.total_mmk)}
                   </span>
                 </div>
+
+                {order.notes ? (
+                  <p className="mt-4 rounded-xl bg-leaf/10 px-3 py-2 text-xs text-ink">
+                    Note: {order.notes}
+                  </p>
+                ) : null}
 
                 <p className="mt-6 text-center text-xs text-smoke">
                   Thank you · Please keep this voucher

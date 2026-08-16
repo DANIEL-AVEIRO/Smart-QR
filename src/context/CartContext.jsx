@@ -5,9 +5,10 @@ const CartContext = createContext(null)
 export function CartProvider({ children }) {
   const [items, setItems] = useState([])
 
-  const addItem = ({ menuItem, selections, quantity, variantLabels, lineTotal }) => {
+  const addItem = ({ menuItem, selections, quantity, variantLabels, lineTotal, notes = '' }) => {
     const unitPrice = Math.round(lineTotal / quantity)
-    const cartKey = `${menuItem.id}:${JSON.stringify(selections)}`
+    const note = String(notes).trim()
+    const cartKey = `${menuItem.id}:${JSON.stringify(selections)}:${note}`
 
     setItems((prev) => {
       const existing = prev.find((item) => item.cartKey === cartKey)
@@ -35,6 +36,7 @@ export function CartProvider({ children }) {
           lineTotal,
           selections,
           variantLabels,
+          notes: note,
         },
       ]
     })

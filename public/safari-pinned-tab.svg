@@ -1,17 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Daniel./">
-  <circle cx="32" cy="32" r="32" fill="#1a1113"/>
-  <g fill="#ffd5c8" transform="translate(16 16)">
-    <!-- finder patterns -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <g fill="#000" transform="translate(16 16)">
     <rect x="0" y="0" width="10" height="10" rx="2.2"/>
     <rect x="22" y="0" width="10" height="10" rx="2.2"/>
     <rect x="0" y="22" width="10" height="10" rx="2.2"/>
-    <rect x="2.35" y="2.35" width="5.3" height="5.3" rx="1" fill="#1a1113"/>
-    <rect x="24.35" y="2.35" width="5.3" height="5.3" rx="1" fill="#1a1113"/>
-    <rect x="2.35" y="24.35" width="5.3" height="5.3" rx="1" fill="#1a1113"/>
-    <rect x="3.7" y="3.7" width="2.6" height="2.6" rx="0.45"/>
-    <rect x="25.7" y="3.7" width="2.6" height="2.6" rx="0.45"/>
-    <rect x="3.7" y="25.7" width="2.6" height="2.6" rx="0.45"/>
-    <!-- data modules -->
     <rect x="13.1" y="0.4" width="3.2" height="3.2" rx="0.7"/>
     <rect x="13.1" y="6.4" width="3.2" height="3.2" rx="0.7"/>
     <rect x="0.4" y="13.1" width="3.2" height="3.2" rx="0.7"/>

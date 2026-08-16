@@ -1,4 +1,4 @@
--- Smart QR order schema (run in Supabase SQL Editor)
+-- Daniel./ order schema (run in Supabase SQL Editor)
 
 create extension if not exists "pgcrypto";
 
@@ -8,6 +8,7 @@ create table if not exists public.orders (
   status text not null default 'new'
     check (status in ('new', 'preparing', 'ready', 'served')),
   total_mmk integer not null default 0 check (total_mmk >= 0),
+  notes text not null default '',
   created_at timestamptz not null default now()
 );
 
@@ -19,6 +20,7 @@ create table if not exists public.order_items (
   unit_price integer not null default 0 check (unit_price >= 0),
   variants jsonb not null default '[]'::jsonb,
   line_total integer not null default 0 check (line_total >= 0),
+  notes text not null default '',
   created_at timestamptz not null default now()
 );
 
@@ -27,6 +29,10 @@ create index if not exists orders_status_created_at_idx
 
 create index if not exists order_items_order_id_idx
   on public.order_items (order_id);
+
+-- Existing projects: add notes columns if the tables were created earlier
+alter table public.orders add column if not exists notes text not null default '';
+alter table public.order_items add column if not exists notes text not null default '';
 
 -- Table privileges (required — RLS alone is not enough)
 grant usage on schema public to anon, authenticated;

@@ -164,7 +164,7 @@ export default function KitchenPage() {
             </span>
             <div>
               <h1 className="font-display text-xl font-bold text-ink sm:text-2xl">Kitchen</h1>
-              <p className="text-xs text-smoke sm:text-sm">Live orders · Smart QR</p>
+              <p className="text-xs text-smoke sm:text-sm">Live orders · {'<Daniel./>'}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -261,9 +261,18 @@ export default function KitchenPage() {
                                     {item.variants.map((v) => v.name || v).join(' · ')}
                                   </p>
                                 )}
+                                {item.notes ? (
+                                  <p className="mt-0.5 text-xs italic text-leaf">{item.notes}</p>
+                                ) : null}
                               </li>
                             ))}
                           </ul>
+
+                          {order.notes ? (
+                            <p className="mt-3 rounded-xl bg-leaf/10 px-3 py-2 text-xs font-medium text-ink">
+                              Note: {order.notes}
+                            </p>
+                          ) : null}
 
                           <div className="mt-4 flex flex-col gap-2">
                             {status === 'ready' && (
